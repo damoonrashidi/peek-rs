@@ -1,0 +1,40 @@
+[package]
+name = "peek"
+version = "0.1.0"
+edition = "2024"
+
+[workspace]
+resolver = "3"
+members = ["ai", "config", "db", "ui"]
+
+[workspace.dependencies]
+ai = { path = "ai" }
+db = { path = "db" }
+config = { path = "config" }
+tokio = "1.49.0"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.149"
+toml = "0.8.19"
+async-trait = "0.1.89"
+
+[dependencies]
+ai.workspace = true
+db.workspace = true
+config.workspace = true
+
+[workspace.lints.clippy]
+all = { level = "deny", priority = -1 }
+pedantic = { level = "deny", priority = -2 }
+module_name_repetitions = "allow"
+
+[workspace.lints.rustdoc]
+broken_intra_doc_links = "deny"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+dead_code = "deny"
+unused_variables = "deny"
+unused_imports = "deny"
+unused_import_braces = "deny"
+unreachable_pub = "deny"
+missing_debug_implementations = "deny"

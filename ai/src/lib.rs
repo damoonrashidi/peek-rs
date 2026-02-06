@@ -1,5 +1,5 @@
+use std::fmt::Display;
 use std::future::Future;
-use std::{fmt::Display, sync::Arc};
 
 use mistralrs::{Model, Response, TextMessageRole, TextMessages, TextModelBuilder};
 
@@ -12,10 +12,6 @@ impl LLM {
     pub async fn new() -> Self {
         let model = TextModelBuilder::new("Qwen/Qwen3-0.6B")
             .with_dtype(mistralrs::ModelDType::F16)
-            .with_tool_callback(
-                "execute_query",
-                Arc::new(|params| Ok(format!("{}({})", params.name, params.arguments))),
-            )
             .build()
             .await
             .expect("Couldn't get model");

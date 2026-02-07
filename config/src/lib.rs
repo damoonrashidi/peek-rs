@@ -9,14 +9,12 @@ pub struct PeekConfig {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct AIConfig {
     pub model: String,
-    pub url: String,
 }
 
 impl Default for AIConfig {
     fn default() -> Self {
         Self {
-            model: "qwen3:8b".to_string(),
-            url: "http://localhost:11434".to_string(),
+            model: "cyankiwi/Ministral-3-8B-Instruct-2512-AWQ-4bit".to_string(),
         }
     }
 }

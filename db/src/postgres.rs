@@ -1,3 +1,5 @@
+use crate::DatabaseResult;
+
 use super::Database;
 use serde_json::{Value, json};
 use sqlx::{Column, Connection, PgConnection, Row, TypeInfo};
@@ -16,20 +18,35 @@ impl PostgresDatabase {
 
 #[async_trait::async_trait]
 impl Database for PostgresDatabase {
-    async fn get_results(&mut self, query: &str) -> Result<Vec<Value>, String> {
+    async fn get_results(&mut self, query: &str) -> Result<DatabaseResult, String> {
         let rows = sqlx::query(query)
             .fetch_all(&mut self.connection)
             .await
             .map_err(|e| e.to_string())?;
 
-        let mut results = Vec::new();
-        for row in rows {
-            let mut fields: Vec<(String, Value, &str)> = Vec::new();
+        let mut results = DatabaseResult {
+            headers: vec![],
+            rows: vec![],
+        };
 
-            for (i, col) in row.columns().iter().enumerate() {
+        if let Some(first) = rows.first() {
+            for col in first.columns().iter() {
                 let col_name = col.name();
                 let type_name = col.type_info().name();
 
+                results
+                    .headers
+                    .push((col_name.to_string(), type_name.to_string()));
+            }
+        } else {
+            return Ok(results);
+        }
+
+        for row in rows {
+            let mut row_data: Vec<Value> = Vec::new();
+
+            for (i, col) in row.columns().iter().enumerate() {
+                let type_name = col.type_info().name();
                 let value: Value = match type_name {
                     "UUID" => row
                         .try_get::<uuid::Uuid, _>(i)
@@ -96,10 +113,10 @@ impl Database for PostgresDatabase {
                     },
                 };
 
-                fields.push((col_name.to_string(), value, type_name));
+                row_data.push(value);
             }
 
-            results.push(json!(fields));
+            results.rows.push(row_data);
         }
 
         Ok(results)

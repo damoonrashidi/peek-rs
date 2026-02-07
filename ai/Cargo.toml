@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+config.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
 futures = "0.3.31"
 mistralrs = { version = "0.7.0", features = ["metal"] }
-tokio = { workspace = true }

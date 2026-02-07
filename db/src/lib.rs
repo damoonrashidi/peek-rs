@@ -10,7 +10,7 @@ pub trait Database: Send + Sync {
     /// Execute a query and return results as JSON
     /// The format will be a vector of tuples, where the tuple is in the format of
     /// [column_name, value, column_type]
-    async fn get_results(&mut self, query: &str) -> Result<Vec<Value>, String>;
+    async fn get_results(&mut self, query: &str) -> Result<DatabaseResult, String>;
 
     /// Execute an sql statement and return whatever the statement returns
     async fn execute(&mut self, query: &str) -> Result<String, String>;
@@ -27,4 +27,10 @@ pub trait Database: Send + Sync {
         ),
         String,
     >;
+}
+
+#[derive(Debug)]
+pub struct DatabaseResult {
+    pub headers: Vec<(String, String)>,
+    pub rows: Vec<Vec<Value>>,
 }
